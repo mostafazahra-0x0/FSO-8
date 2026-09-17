@@ -2,6 +2,7 @@ import { ApolloServer } from "@apollo/server"
 import { startStandaloneServer } from "@apollo/server/standalone"
 import { books } from "./books.js"
 import { authors } from "./authors.js"
+import { GraphQLError } from 'graphql'
 const typeDefs = `
   type Book {
     title: String!
@@ -15,6 +16,7 @@ const typeDefs = `
     name: String!
     id: String!
     born: Int
+    bookCount: Int!
   }
 
   type Query {
@@ -22,7 +24,7 @@ const typeDefs = `
     books: [Book]!
     authors: [Author]!
     bookCount: Int!
-    authorCount: Int!
+    authorCount: [Author!]!
     allBooks: [Book!]!
     allAuthors: [Author!]!
   }
@@ -37,6 +39,11 @@ const resolvers = {
     dummy: () => 0,
     books: () => books,
     authors: () => authors,
+  },
+  Author: {
+      bookCount: (root) => {
+        return books.filter((b) => b.author === root.name).length
+    },
   },
 }
 
