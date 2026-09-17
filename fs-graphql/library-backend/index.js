@@ -3,6 +3,8 @@ import { startStandaloneServer } from "@apollo/server/standalone"
 import { books } from "./books.js"
 import { authors } from "./authors.js"
 import { GraphQLError } from 'graphql'
+import { v4 as uuidv4 } from 'uuid'
+
 const typeDefs = `
   type Book {
     title: String!
@@ -27,6 +29,14 @@ const typeDefs = `
     authorCount: [Author!]!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+  }
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]!
+    ): Book!
   }
 `
 
@@ -57,6 +67,19 @@ const resolvers = {
         return books.filter((b) => b.author === root.name).length
     },
   },
+  Mutation: {
+    addBook: (root, args) => {
+      let author = authors.find((a) => a.name === args.author)
+      if (!author) {
+            author = { name: args.author, id: uuidv4(), born: null }
+            authors.push(author)
+          }
+      const book = { ...args, id: uuidv4() }
+          books.push(book)
+      
+          return book
+        },
+    },
 }
 
 const server = new ApolloServer({
