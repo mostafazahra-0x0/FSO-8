@@ -12,5 +12,9 @@
   "type": "commonjs",
   "devDependencies": {
     "concurrently": "^10.0.5"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.3",
+    "mongoose": "^9.10.2"
   }
 }
