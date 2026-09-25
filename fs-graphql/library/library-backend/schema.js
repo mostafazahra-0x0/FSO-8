@@ -28,7 +28,7 @@ const typeDefs = `
     books: [Book]!
     authors: [Author]!
     bookCount: Int!
-    authorCount: [Author!]!
+    authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
     me: User
@@ -52,6 +52,7 @@ const typeDefs = `
             username: String!
             password: String!
           ): Token
+      _resetDatabase: Boolean
   }
 `;
 export default typeDefs;

@@ -1,14 +1,27 @@
 const {
   ApolloServer,
-} = require('../library-backend/node_modules/@apollo/server')
+} = require('../library/library-backend/node_modules/@apollo/server')
 const { MongoMemoryServer } = require('mongodb-memory-server')
-const mongoose = require('../library-backend/node_modules/mongoose')
+const mongoose = require('../library/library-backend/node_modules/mongoose')
 
-const typeDefs = require('../library-backend/schema')
-const resolvers = require('../library-backend/resolvers')
-const Author = require('../library-backend/models/author')
-const Book = require('../library-backend/models/book')
-const User = require('../library-backend/models/user')
+const interopDefault = (m) =>
+  m && m.__esModule && 'default' in m ? m.default : (m?.default ?? m)
+
+const typeDefs = interopDefault(
+  require('../library/library-backend/schema.js'),
+)
+const resolvers = interopDefault(
+  require('../library/library-backend/resolvers.js'),
+)
+const Author = interopDefault(
+  require('../library/library-backend/models/authors.js'),
+)
+const Book = interopDefault(
+  require('../library/library-backend/models/books.js'),
+)
+const User = interopDefault(
+  require('../library/library-backend/models/User.js'),
+)
 
 process.env.JWT_SECRET = 'test-secret-key'
 
@@ -53,13 +66,58 @@ const initialBooks = [
 
 let mongoServer
 
+const getExternalUri = () => {
+  if (process.env.MONGODB_URI) return process.env.MONGODB_URI
+  try {
+    const fs = require('node:fs')
+    const path = require('node:path')
+    const envPath = path.join(
+      __dirname,
+      '../library/library-backend/.env',
+    )
+    const content = fs.readFileSync(envPath, 'utf8')
+    const match = content.match(/^MONGODB_URI=(.+)$/m)
+    if (match) return match[1].trim()
+  } catch {
+    // ignore
+  }
+  return null
+}
+
 const setupDatabase = async () => {
-  mongoServer = await MongoMemoryServer.create()
-  const uri = mongoServer.getUri()
-  await mongoose.connect(uri)
+  try {
+    mongoServer = await MongoMemoryServer.create()
+    const uri = mongoServer.getUri()
+    await mongoose.connect(uri)
+    return
+  } catch (error) {
+    console.warn(
+      'MongoMemoryServer failed, falling back to external MongoDB:',
+      error.message.split('\n')[0],
+    )
+  }
+
+  const uri = getExternalUri()
+  if (!uri) {
+    throw new Error(
+      'No MongoDB available: memory server download failed and no MONGODB_URI found',
+    )
+  }
+  // Use a separate test database so real data is never wiped.
+  // Include pid so parallel test files (node --test runs each file
+  // in its own process) don't wipe each other's data.
+  await mongoose.connect(uri, { dbName: `library-test-${process.pid}` })
 }
 
 const teardownDatabase = async () => {
+  if (!mongoServer) {
+    // Clean up the per-process external test database
+    try {
+      await mongoose.connection.dropDatabase()
+    } catch {
+      // ignore
+    }
+  }
   await mongoose.connection.close()
   if (mongoServer) {
     await mongoServer.stop()
