@@ -10,6 +10,9 @@ const resolvers = {
       return Person.find({})
     },
     findPerson: async (root, args) => Person.findOne({ name: args.name }),
+    me: async (root, args, context) => {
+      return context.currentUser
+    },
   },
   Person: {
     address: ({ street, city }) => {

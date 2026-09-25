@@ -11,9 +11,8 @@ const connectToDatabase = async (uri) => {
     console.log('connected to MongoDB')
     return true
   } catch (error) {
-    console.log('error connection to MongoDB:', error.message)
-    console.log('continuing without database (using in-memory data)')
-    return false
+      console.log('error connection to MongoDB:', error.message)
+      process.exit(1)
   }
 }
 
