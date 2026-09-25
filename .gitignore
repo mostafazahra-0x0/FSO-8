@@ -4,3 +4,4 @@ dist/
 dist-ssr/
 *.log
 *.local
+fs-graphql/library/library-backend/.env
