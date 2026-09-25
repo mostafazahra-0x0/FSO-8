@@ -4,12 +4,10 @@ const jwt = require('jsonwebtoken')
 const resolvers = require('./resolvers')
 const typeDefs = require('./schema')
 const User = require('./models/user')
-
 const getUserFromAuthHeader = async (auth) => {
   if (!auth || !auth.startsWith('Bearer ')) {
     return null
   }
- 
   const decodedToken = jwt.verify(auth.substring(7), process.env.JWT_SECRET)
   return User.findById(decodedToken.id).populate('friends')
 }
@@ -18,7 +16,6 @@ const startServer = (port) => {
     typeDefs,
     resolvers,
   })
-
   startStandaloneServer(server, {
     listen: { port },
     context: async ({ req }) => {
@@ -30,5 +27,4 @@ const startServer = (port) => {
     console.log(`Server ready at ${url}`)
   })
 }
-
 module.exports = startServer
