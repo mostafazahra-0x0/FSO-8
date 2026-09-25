@@ -1,5 +1,7 @@
+import { GraphQLError } from 'graphql'
 import Book from './models/books.js'
 import Author from './models/authors.js'
+
 const resolvers = {
   Query: {
     bookCount: async () => Book.collection.countDocuments(),
@@ -7,7 +9,6 @@ const resolvers = {
     
     allBooks: async (root, args) => {
       const filter = {}
-
       if (args.author) {
         const author = await Author.findOne({ name: args.author })
         if (!author) return []
@@ -36,11 +37,32 @@ const resolvers = {
 
       if (!author) {
         author = new Author({ name: args.author })
-        await author.save()
+        try {
+          await author.save()
+        } catch (error) {
+          throw new GraphQLError('Saving author failed: ' + error.message, {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+              error,
+            },
+          })
+        }
       }
 
       const book = new Book({ ...args, author: author._id })
-      await book.save()
+
+      try {
+        await book.save()
+      } catch (error) {
+        throw new GraphQLError('Saving book failed: ' + error.message, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error,
+          },
+        })
+      }
 
       return book.populate('author')
     },
@@ -52,7 +74,18 @@ const resolvers = {
       }
 
       author.born = args.setBornTo
-      return author.save()
+
+      try {
+        return await author.save()
+      } catch (error) {
+        throw new GraphQLError('Updating author failed: ' + error.message, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.setBornTo,
+            error,
+          },
+        })
+      }
     },
   },
 }
