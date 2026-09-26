@@ -23,6 +23,6 @@ jobs:
 
       - name: Install test dependencies
         working-directory: fs-graphql/tests-chapter4
-      - name: Run tests
+      - name: npm ci
         working-directory: fs-graphql/tests-chapter4
         run: npm test
