@@ -1,49 +1,6 @@
 import { useState } from 'react'
-import { gql } from '@apollo/client'
 import { useMutation } from '@apollo/client/react'
-
-const ADD_BOOK = gql`
-  mutation createBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!) {
-    addBook(
-      title: $title
-      author: $author
-      published: $published
-      genres: $genres
-    ) {
-      title
-      author {
-        name
-      }      published
-      genres
-      id
-    }
-  }
-`
-
-const ALL_AUTHORS = gql`
-  query {
-    allAuthors {
-      name
-      born
-      bookCount
-      id
-    }
-  }
-`
-
-const ALL_BOOKS = gql`
-  query {
-    allBooks {
-      title
-      author {
-        name
-      }
-      published
-      genres
-      id
-    }
-  }
-`
+import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS, ALL_GENRES, updateCache } from '../queries'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -51,9 +8,16 @@ const NewBook = (props) => {
   const [published, setPublished] = useState('')
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
-
   const [addBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }],
+    refetchQueries: [
+      { query: ALL_AUTHORS },
+      { query: ALL_GENRES },
+    ],
+  
+    update: (cache, response) => {
+      updateCache(cache, response.data.addBook)
+    },
+  
     onError: (error) => {
       if (props.setError) {
         props.setError(error.message)

@@ -1,36 +1,17 @@
-import { gql } from '@apollo/client'
 import { useQuery } from '@apollo/client/react'
 import { useState } from 'react'
-
-const ALL_BOOKS = gql`
-  query allBooks($genre: String) {
-    allBooks(genre: $genre) {
-      title
-      author {
-        name
-      }
-      published
-      genres
-      id
-    }
-  }
-`
-
-const ALL_GENRES = gql`
-  query {
-    allGenres
-  }
-`
-
+import { ALL_BOOKS, ALL_GENRES, ME } from '../queries'
 const Books = (props) => {
   const [genre, setGenre] = useState('')
 
   const result = useQuery(ALL_BOOKS, {
-    variables: { genre: genre || undefined },
+    // No variables when showing all books, so this shares the same cache
+    // entry that NewBook's update() writes to via { query: ALL_BOOKS }.
+    ...(genre ? { variables: { genre } } : {}),
   })
 
   const genresResult = useQuery(ALL_GENRES)
-
+  const meResult = useQuery(ME)
   if (!props.show) {
     return null
   }
