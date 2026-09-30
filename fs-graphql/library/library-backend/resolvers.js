@@ -28,6 +28,11 @@ const resolvers = {
     me: (root, args, context) => {
       return context.currentUser
     },
+    allGenres: async () => {
+      const books = await Book.find({})
+      const genres = books.flatMap((book) => book.genres)
+      return [...new Set(genres)]
+    },
   },
 
   Author: {
