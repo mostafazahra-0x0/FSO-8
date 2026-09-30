@@ -46,7 +46,7 @@ const Authors = (props) => {
         </tbody>
       </table>
 
-      <BirthYearForm />
+      {props.loggedIn && <BirthYearForm />}
     </div>
   )
 }
