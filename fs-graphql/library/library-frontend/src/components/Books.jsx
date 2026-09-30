@@ -16,22 +16,32 @@ const ALL_BOOKS = gql`
   }
 `
 
+const ALL_GENRES = gql`
+  query {
+    allGenres
+  }
+`
+
 const Books = (props) => {
   const [genre, setGenre] = useState('')
+
   const result = useQuery(ALL_BOOKS, {
-    variables: { genre: genre || null },
+    variables: { genre: genre || undefined },
   })
+
+  const genresResult = useQuery(ALL_GENRES)
+
   if (!props.show) {
     return null
   }
 
-  if (result.loading) {
+  if (result.loading || genresResult.loading) {
     return <div>loading...</div>
   }
 
   const books = result.data ? result.data.allBooks : []
-  const genres = [...new Set(books.flatMap((book) => book.genres))]
-  
+  const genres = genresResult.data ? genresResult.data.allGenres : []
+
   return (
     <div>
       <h2>books</h2>
@@ -43,6 +53,7 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
+
           {books.map((a) => (
             <tr key={a.id}>
               <td>{a.title}</td>
@@ -52,15 +63,16 @@ const Books = (props) => {
           ))}
         </tbody>
       </table>
+
       <div>
         <button onClick={() => setGenre('')}>all</button>
-      
+
         {genres.map((g) => (
           <button key={g} onClick={() => setGenre(g)}>
             {g}
           </button>
         ))}
-      </div>      
+      </div>
     </div>
   )
 }
