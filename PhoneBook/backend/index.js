@@ -1,6 +1,6 @@
-import "dotenv/config"
-import connectToDatabase from "./db.js"
-import startServer from "./server.js"
+require('dotenv').config()
+const connectToDatabase = require('./db.js')
+const startServer = require('./server.js')
 
 const MONGODB_URI = process.env.MONGODB_URI
 const PORT = process.env.PORT || 4000
