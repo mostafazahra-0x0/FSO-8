@@ -23,7 +23,7 @@ const ALL_AUTHORS = gql`
   }
 `
 
-const BirthYearForm = () => {
+const BirthYearForm = ({ setError }) => {
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
 
@@ -31,6 +31,11 @@ const BirthYearForm = () => {
 
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
+    onError: (error) => {
+      if (setError) {
+        setError(error.message)
+      }
+    },
   })
 
   if (result.loading) {
