@@ -27,7 +27,7 @@ module.exports = defineConfig({
     },
     {
       command: 'npm run dev',
-      cwd: '../library-frontend',
+      cwd: '../library/library-frontend',
       url: 'http://localhost:5173',
       timeout: 30000,
       reuseExistingServer: false,

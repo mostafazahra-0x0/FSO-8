@@ -27,6 +27,12 @@ const Books = (props) => {
     <div>
       <h2>books</h2>
 
+      {genre && (
+        <p>
+          in genre <b>{genre}</b>
+        </p>
+      )}
+
       <table>
         <tbody>
           <tr>
@@ -46,7 +52,7 @@ const Books = (props) => {
       </table>
 
       <div>
-        <button onClick={() => setGenre('')}>all</button>
+        <button onClick={() => setGenre('')}>all genres</button>
 
         {genres.map((g) => (
           <button key={g} onClick={() => setGenre(g)}>

@@ -27,7 +27,7 @@ const LoginForm = ({ setToken, setError, show, setPage }) => {
     },
     onError: (error) => {
       if (setError) {
-        setError(error.message)
+        setError(`login failed: ${error.message}`)
       }
     }
   })
@@ -45,13 +45,17 @@ const LoginForm = ({ setToken, setError, show, setPage }) => {
     <div>
       <form onSubmit={submit}>
         <div>
-          username <input
+          <label htmlFor="username">username</label>
+          <input
+            id="username"
             value={username}
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
         <div>
-          password <input
+          <label htmlFor="password">password</label>
+          <input
+            id="password"
             type="password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}

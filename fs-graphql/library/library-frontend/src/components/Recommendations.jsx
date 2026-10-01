@@ -11,6 +11,10 @@ const Recommendations = (props) => {
     skip: !favoriteGenre,
     notifyOnNetworkStatusChange: true,
   })
+
+  if (!props.show) {
+    return null
+  }
   
   if (meResult.loading || booksResult.loading) {
     return <div>loading...</div>
@@ -21,7 +25,9 @@ const Recommendations = (props) => {
   return (
     <div>
       <h2>recommendations</h2>
-      <p>books in your favorite genre: {favoriteGenre}</p>
+      <p>
+        books in your favorite genre <b>{favoriteGenre}</b>
+      </p>
 
       <table>
         <tbody>

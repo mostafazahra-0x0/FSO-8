@@ -60,8 +60,10 @@ const BirthYearForm = ({ setError }) => {
       <h3>Set birthyear</h3>
       <form onSubmit={submit}>
         <div>
-          name
+          <label htmlFor="name-select">name</label>
           <select
+            id="name-select"
+            name="name"
             value={name}
             onChange={({ target }) => setName(target.value)}
           >
@@ -74,8 +76,9 @@ const BirthYearForm = ({ setError }) => {
           </select>
         </div>
         <div>
-          born
+          <label htmlFor="born">born</label>
           <input
+            id="born"
             type="number"
             value={born}
             onChange={({ target }) => setBorn(target.value)}
