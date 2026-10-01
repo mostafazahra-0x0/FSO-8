@@ -2,16 +2,14 @@ import { useQuery } from '@apollo/client/react'
 import { ALL_BOOKS, ME } from '../queries'
 
 const Recommendations = (props) => {
-  const meResult = useQuery(ME)
-
+  const meResult = useQuery(ME, {
+    skip: !props.show,
+  })
   const favoriteGenre = meResult.data?.me?.favoriteGenre
-
   const booksResult = useQuery(ALL_BOOKS, {
     variables: { genre: favoriteGenre },
-    skip: !favoriteGenre,
-    notifyOnNetworkStatusChange: true,
+    skip: !props.show || !favoriteGenre,
   })
-
   if (!props.show) {
     return null
   }
