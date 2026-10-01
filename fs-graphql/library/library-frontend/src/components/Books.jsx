@@ -5,11 +5,9 @@ const Books = (props) => {
   const [genre, setGenre] = useState('')
 
   const result = useQuery(ALL_BOOKS, {
-    // No variables when showing all books, so this shares the same cache
-    // entry that NewBook's update() writes to via { query: ALL_BOOKS }.
-    ...(genre ? { variables: { genre } } : {}),
+    variables: { genre: genre || undefined },
   })
-
+  
   const genresResult = useQuery(ALL_GENRES)
   const meResult = useQuery(ME)
   if (!props.show) {
