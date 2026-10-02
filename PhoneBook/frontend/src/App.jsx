@@ -4,6 +4,8 @@ import Notify from './components/Notify'
 import PhoneForm from './components/PhoneForm'
 import { useState } from 'react'
 import LoginForm from './components/LoginForm'
+import Persons from './components/Persons'
+
 import { useApolloClient, useQuery } from '@apollo/client/react'
 
 const App = () => {
@@ -40,6 +42,7 @@ const App = () => {
   }
   return (
     <div>
+      <Persons persons={result.data.allPersons} />
       <Notify errorMessage={errorMessage} />
       <button onClick={onLogout}>logout</button>
       <PersonForm setError={notify} />
