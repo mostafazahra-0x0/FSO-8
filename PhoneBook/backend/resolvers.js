@@ -1,3 +1,5 @@
+const { PubSub } = require('graphql-subscriptions')
+const pubsub = new PubSub()
 const { GraphQLError } = require('graphql')
 const Person = require('./models/person')
 const User = require('./models/user')
@@ -50,6 +52,7 @@ const resolvers = {
         await person.save()
         currentUser.friends = currentUser.friends.concat(person)
         await currentUser.save()
+        pubsub.publish('PERSON_ADDED', { personAdded: person })
       } catch (error) {
         throw new GraphQLError(`Saving person failed: ${error.message}`, {
           extensions: {
@@ -140,6 +143,11 @@ const resolvers = {
       await currentUser.save()
   
       return currentUser
+    },
+  },
+  Subscription: {
+    personAdded: {
+      subscribe: () => pubsub.asyncIterableIterator('PERSON_ADDED')
     },
   },
 }
