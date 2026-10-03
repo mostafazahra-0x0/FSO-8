@@ -19,7 +19,7 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 3
-  },
+  }
 })
 
 const Person = mongoose.model('Person', schema)
